@@ -125,10 +125,12 @@ If user asks unrelated questions, politely redirect them to recruitment topics.
 
         }
 
-        const cleanReply = data.choices[0].message.content
-            .replace(/\*\*/g, '')
-            .replace(/\#/g, '')
-            .replace(/\n/g, '<br>');
+const cleanReply = data.choices[0].message.content
+    .trim()
+    .replace(/\*\*/g, '')
+    .replace(/\#/g, '')
+    .replace(/\n+/g, '<br>')
+    .replace(/^\s+|\s+$/g, '');
 
         res.json({
             reply: cleanReply
