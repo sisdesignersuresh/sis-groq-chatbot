@@ -16,7 +16,8 @@ app.post('/chat', async (req, res) => {
 
     try {
 
-        const userMessage = req.body.message;
+        console.log("User:", userMessage);
+        console.log("API KEY:", process.env.GROQ_API_KEY);
 
         console.log("User:", userMessage);
 
