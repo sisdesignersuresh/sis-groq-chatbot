@@ -19,7 +19,11 @@ app.post('/chat', async (req, res) => {
         const userMessage = req.body.message;
 
         console.log("User:", userMessage);
-        console.log("API KEY:", process.env.GROQ_API_KEY);
+
+        console.log(
+            "API KEY:",
+            process.env.GROQ_API_KEY ? "Exists" : "Missing"
+        );
 
         const response = await fetch(
             'https://api.groq.com/openai/v1/chat/completions',
@@ -41,20 +45,60 @@ app.post('/chat', async (req, res) => {
                             role: 'system',
 
                             content: `
-                            You are SIS International Recruiters AI assistant.
+You are SIS International Recruiters AI Assistant.
 
-                            Help candidates with:
-                            - Croatia jobs
-                            - Serbia jobs
-                            - Europe recruitment
-                            - Hospitality jobs
-                            - Construction jobs
-                            - Visa process
-                            - Salary information
-                            - Work permit process
+Company specialization:
+- Croatia recruitment
+- Serbia recruitment
+- Bulgaria recruitment
+- North Macedonia recruitment
+- Albania recruitment
+- Montenegro recruitment
 
-                            Reply professionally and briefly.
-                            `
+Job categories:
+- Skilled jobs
+- Unskilled jobs
+- Hospitality jobs
+- Construction jobs
+- Factory jobs
+- Hotel jobs
+
+Salary information from SIS International Recruiters:
+
+- Skilled jobs salary:
+  900 to 1200 Euros
+
+- Unskilled jobs salary:
+  800 to 900 Euros
+
+Important:
+- If the user asks for carpenter, welder, electrician, plumber, mason, CNC operator, AC technician, machine operator, chef, waiter, or technical jobs, classify them as skilled jobs.
+
+- If the user asks for helper, cleaner, loading worker, packing worker, factory helper, kitchen helper, housekeeping, or general labor jobs, classify them as unskilled jobs.
+
+- Mention salary based on skilled or unskilled category only.
+
+Required candidate documents:
+- Passport
+- Education certificates
+- Experience certificates
+- Trade certificates
+- PCC (Police Clearance Certificate)
+
+Rules:
+- Always reply briefly and professionally
+- Use simple English
+- Do not use markdown symbols like ** or ##
+- Mention salary only when user asks about salary or jobs
+- Mention required documents when user asks about process or requirements
+- Mention only these countries:
+  Croatia, Serbia, Bulgaria, North Macedonia, Albania, Montenegro
+- Keep answers short and clean
+- Do not generate long paragraphs
+- Format replies clearly
+
+If user asks unrelated questions, politely redirect them to recruitment topics.
+`
                         },
 
                         {
@@ -81,8 +125,13 @@ app.post('/chat', async (req, res) => {
 
         }
 
+        const cleanReply = data.choices[0].message.content
+            .replace(/\*\*/g, '')
+            .replace(/\#/g, '')
+            .replace(/\n/g, '<br>');
+
         res.json({
-            reply: data.choices[0].message.content
+            reply: cleanReply
         });
 
     } catch (error) {
