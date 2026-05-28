@@ -16,10 +16,10 @@ app.post('/chat', async (req, res) => {
 
     try {
 
-        console.log("User:", userMessage);
-        console.log("API KEY:", process.env.GROQ_API_KEY);
+        const userMessage = req.body.message;
 
         console.log("User:", userMessage);
+        console.log("API KEY:", process.env.GROQ_API_KEY);
 
         const response = await fetch(
             'https://api.groq.com/openai/v1/chat/completions',
@@ -50,6 +50,8 @@ app.post('/chat', async (req, res) => {
                             - Hospitality jobs
                             - Construction jobs
                             - Visa process
+                            - Salary information
+                            - Work permit process
 
                             Reply professionally and briefly.
                             `
@@ -71,7 +73,7 @@ app.post('/chat', async (req, res) => {
 
         console.log("Groq Response:", data);
 
-        if(data.error){
+        if (data.error) {
 
             return res.json({
                 reply: data.error.message
@@ -85,7 +87,7 @@ app.post('/chat', async (req, res) => {
 
     } catch (error) {
 
-        console.log(error);
+        console.log("SERVER ERROR:", error);
 
         res.json({
             reply: 'AI server issue. Please try again.'
