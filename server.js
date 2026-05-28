@@ -6,14 +6,22 @@ dotenv.config();
 
 const app = express();
 
+/* =========================
+   CORS
+========================= */
+
 app.use(cors({
     origin: '*'
 }));
 
+/* =========================
+   JSON
+========================= */
+
 app.use(express.json());
 
 /* =========================
-   CHAT MEMORY STORAGE
+   CHAT MEMORY
 ========================= */
 
 const conversations = {};
@@ -32,7 +40,7 @@ app.post('/chat', async (req, res) => {
         console.log("User:", userMessage);
 
         /* =========================
-           CREATE MEMORY
+           CREATE CHAT MEMORY
         ========================= */
 
         if (!conversations[userId]) {
@@ -84,31 +92,85 @@ app.post('/chat', async (req, res) => {
                     - Trade Certificates
                     - PCC
 
+                    VISA PROCESS:
+
+                    1. Candidate shares:
+                       - Passport
+                       - Education Certificates
+                       - Experience Certificates
+                       - Trade Certificates
+                       - PCC
+
+                    2. SIS team checks profile
+                       and job availability.
+
+                    3. Employer interview
+                       will be scheduled.
+
+                    4. After selection:
+                       - Offer Letter
+                       - Work Permit
+                       - Visa Process
+                       will begin.
+
+                    5. SIS team guides the
+                       candidate until visa stamping.
+
+                    6. Processing time:
+                       Usually 2 to 6 months
+                       depending on country
+                       and job category.
+
                     IMPORTANT RULES:
 
                     - Remember previous conversation.
                     - Never ask repeated questions.
-                    - If user already mentioned country or job role,
+                    - If user already mentioned
+                      country or job role,
                       continue naturally.
-                    - Reply like a real recruitment consultant.
-                    - Keep replies short, professional and friendly.
+
+                    - Reply like a real
+                      recruitment consultant.
+
+                    - Keep replies:
+                      short,
+                      professional,
+                      clear and friendly.
+
                     - Guide candidates step by step.
-                    - If candidate asks salary,
+
+                    - If candidate asks salary:
                       mention:
-                      Skilled: 900-1200 Euros
-                      Unskilled: 800-900 Euros
+                      Skilled Jobs:
+                      900-1200 Euros
 
-                    - If candidate asks documents,
-                      mention all required documents.
+                      Unskilled Jobs:
+                      800-900 Euros
 
-                    - If candidate asks countries,
+                    - If candidate asks documents:
+                      mention:
+                      Passport,
+                      Education Certificates,
+                      Experience Certificates,
+                      Trade Certificates,
+                      PCC.
+
+                    - If candidate asks countries:
                       mention only:
-                      Croatia, Serbia, Bulgaria,
-                      North Macedonia, Albania,
+                      Croatia,
+                      Serbia,
+                      Bulgaria,
+                      North Macedonia,
+                      Albania,
                       Montenegro.
 
+                    - If candidate asks visa process:
+                      explain properly step-by-step.
+
                     - Do not give fake promises.
-                    - Keep answers clear and direct.
+
+                    - Speak naturally like
+                      a human recruiter.
                     `
                 }
 
@@ -121,12 +183,14 @@ app.post('/chat', async (req, res) => {
         ========================= */
 
         conversations[userId].push({
+
             role: 'user',
             content: userMessage
+
         });
 
         /* =========================
-           GROQ API REQUEST
+           GROQ API
         ========================= */
 
         const response = await fetch(
@@ -136,8 +200,13 @@ app.post('/chat', async (req, res) => {
                 method: 'POST',
 
                 headers: {
-                    'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-                    'Content-Type': 'application/json'
+
+                    'Authorization':
+                    `Bearer ${process.env.GROQ_API_KEY}`,
+
+                    'Content-Type':
+                    'application/json'
+
                 },
 
                 body: JSON.stringify({
@@ -160,7 +229,7 @@ app.post('/chat', async (req, res) => {
         console.log("Groq Response:", data);
 
         /* =========================
-           ERROR HANDLING
+           ERROR
         ========================= */
 
         if (data.error) {
@@ -172,18 +241,25 @@ app.post('/chat', async (req, res) => {
         }
 
         /* =========================
+           BOT REPLY
+        ========================= */
+
+        const botReply =
+            data.choices[0].message.content;
+
+        /* =========================
            SAVE AI REPLY
         ========================= */
 
-        const botReply = data.choices[0].message.content;
-
         conversations[userId].push({
+
             role: 'assistant',
             content: botReply
+
         });
 
         /* =========================
-           LIMIT MEMORY SIZE
+           LIMIT MEMORY
         ========================= */
 
         if (conversations[userId].length > 20) {
@@ -194,7 +270,7 @@ app.post('/chat', async (req, res) => {
         }
 
         /* =========================
-           SEND RESPONSE
+           RESPONSE
         ========================= */
 
         res.json({
@@ -206,7 +282,8 @@ app.post('/chat', async (req, res) => {
         console.log(error);
 
         res.json({
-            reply: 'AI server issue. Please try again.'
+            reply:
+            'AI server issue. Please try again.'
         });
 
     }
@@ -214,7 +291,7 @@ app.post('/chat', async (req, res) => {
 });
 
 /* =========================
-   ROOT API
+   HOME PAGE
 ========================= */
 
 app.get('/', (req, res) => {
@@ -224,13 +301,15 @@ app.get('/', (req, res) => {
 });
 
 /* =========================
-   START SERVER
+   SERVER
 ========================= */
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
 
-    console.log(`Server running on ${PORT}`);
+    console.log(
+        `Server running on ${PORT}`
+    );
 
 });
