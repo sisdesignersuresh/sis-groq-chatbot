@@ -6,7 +6,10 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: '*'
+}));
+
 app.use(express.json());
 
 app.post('/chat', async (req, res) => {
@@ -14,6 +17,8 @@ app.post('/chat', async (req, res) => {
     try {
 
         const userMessage = req.body.message;
+
+        console.log("User:", userMessage);
 
         const response = await fetch(
             'https://api.groq.com/openai/v1/chat/completions',
@@ -27,7 +32,7 @@ app.post('/chat', async (req, res) => {
 
                 body: JSON.stringify({
 
-                    model: 'llama-3.3-70b-versatile',
+                    model: 'llama3-8b-8192',
 
                     messages: [
 
@@ -37,18 +42,15 @@ app.post('/chat', async (req, res) => {
                             content: `
                             You are SIS International Recruiters AI assistant.
 
-                            You help candidates with:
+                            Help candidates with:
                             - Croatia jobs
                             - Serbia jobs
-                            - Greece jobs
                             - Europe recruitment
                             - Hospitality jobs
                             - Construction jobs
-                            - Nursing jobs
+                            - Visa process
 
-                            Reply professionally.
-                            Keep answers short.
-                            Encourage WhatsApp contact.
+                            Reply professionally and briefly.
                             `
                         },
 
@@ -66,6 +68,16 @@ app.post('/chat', async (req, res) => {
 
         const data = await response.json();
 
+        console.log("Groq Response:", data);
+
+        if(data.error){
+
+            return res.json({
+                reply: data.error.message
+            });
+
+        }
+
         res.json({
             reply: data.choices[0].message.content
         });
@@ -75,7 +87,7 @@ app.post('/chat', async (req, res) => {
         console.log(error);
 
         res.json({
-            reply: 'Server error'
+            reply: 'AI server issue. Please try again.'
         });
 
     }
