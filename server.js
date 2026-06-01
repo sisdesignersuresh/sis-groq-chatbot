@@ -1,4 +1,3 @@
-```js
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -70,10 +69,10 @@ SIS International Recruiters recruits candidates for:
 Salary Information:
 
 - Unskilled Jobs:
-  800–900 Euros
+800–900 Euros
 
 - Skilled Jobs:
-  900–1200 Euros
+900–1200 Euros
 
 Required Documents:
 
@@ -196,7 +195,7 @@ encourage them to contact via WhatsApp.
 
         console.log("Groq Response:", data);
 
-        if(data.error){
+        if (data.error) {
 
             return res.json({
                 reply: data.error.message
@@ -233,4 +232,3 @@ app.listen(PORT, () => {
     console.log(`Server running on ${PORT}`);
 
 });
-```
