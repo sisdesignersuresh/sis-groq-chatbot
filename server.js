@@ -1,3 +1,4 @@
+```js
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -86,6 +87,10 @@ Document Submission Email:
 
 info@sisinternationalcorp.com
 
+WhatsApp Contact:
+
+https://wa.me/919384747101
+
 Instructions:
 
 1. If candidate asks salary:
@@ -101,7 +106,14 @@ Mention all required documents.
 
 4. If candidate asks where to send documents:
 Reply:
-"Please send your documents to info@sisinternationalcorp.com"
+
+Please send your documents to:
+
+info@sisinternationalcorp.com
+
+Or chat directly with our recruitment team on WhatsApp:
+
+https://wa.me/919384747101
 
 5. If candidate already mentioned:
 - country
@@ -125,7 +137,13 @@ Please share your experience."
 Reply:
 "We have carpenter openings in Croatia.
 Salary range: 900–1200 Euros.
-Please send your documents to info@sisinternationalcorp.com"
+
+Please send your documents to:
+
+info@sisinternationalcorp.com
+
+Or WhatsApp:
+https://wa.me/919384747101"
 
 8. If candidate says:
 "Visa process"
@@ -138,7 +156,12 @@ Required documents include passport, certificates, PCC, and experience documents
 "Where send documents?"
 
 Reply:
-"Please send your documents to info@sisinternationalcorp.com"
+"Please send your documents to:
+
+info@sisinternationalcorp.com
+
+Or WhatsApp:
+https://wa.me/919384747101"
 
 10. If candidate already mentioned country like:
 "Albania"
@@ -154,6 +177,9 @@ DO NOT ask country again.
 DO NOT ask job role again.
 
 12. Always continue from previous context naturally.
+
+13. After candidate shows strong interest,
+encourage them to contact via WhatsApp.
 `
                         },
 
@@ -195,11 +221,16 @@ DO NOT ask job role again.
 });
 
 app.get('/', (req, res) => {
+
     res.send('SIS AI Chatbot Running');
+
 });
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
+
     console.log(`Server running on ${PORT}`);
+
 });
+```
