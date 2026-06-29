@@ -133,10 +133,17 @@ app.post('/api/lead', (req, res) => {
   res.json({ success: true });
 });
 
-const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'sis2024admin';
+function normalizePassword(value) {
+  return String(value || '')
+    .trim()
+    .replace(/^['"]|['"]$/g, '');
+}
+
+const ADMIN_PASS = normalizePassword(process.env.ADMIN_PASSWORD || 'sis2024admin');
 
 app.get('/admin/leads', (req, res) => {
-  if (req.query.password !== ADMIN_PASS) return res.status(401).json({ error: 'Unauthorized' });
+  const providedPassword = normalizePassword(req.query.password);
+  if (providedPassword !== ADMIN_PASS) return res.status(401).json({ error: 'Unauthorized' });
   const leads = readLeads();
   res.json({ total: leads.length, leads });
 });
