@@ -141,7 +141,11 @@ app.post('/chat', async (req, res) => {
 
     res.json({ reply, leadCaptured });
   } catch (error) {
-    console.error('Groq error:', error.message);
+    const errorMessage = error?.message || String(error || 'Unknown error');
+    console.error('[/chat] exact error:', errorMessage);
+    if (error?.stack) {
+      console.error('[/chat] stack:', error.stack);
+    }
     res.status(500).json({ error: 'AI service is temporarily unavailable. Please try again later.' });
   }
 });
