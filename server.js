@@ -229,15 +229,33 @@ tr:hover td{background:#0f172a}
 </div>
 <script>
 let all=[],pw='';
-function go(){pw=document.getElementById('pw').value;load();}
+function go(){
+  pw=document.getElementById('pw').value;
+  console.log('Login button clicked, password:', pw);
+  load();
+}
 async function load(){
-  const r=await fetch('/admin/leads?password='+encodeURIComponent(pw));
-  if(r.status===401){document.getElementById('err').style.display='block';return;}
-  const d=await r.json();all=d.leads||[];
-  document.getElementById('lv').style.display='none';
-  document.getElementById('dv').style.display='block';
-  document.getElementById('ts').textContent='Updated: '+new Date().toLocaleTimeString();
-  stats();render();
+  try {
+    console.log('Fetching leads with password:', pw);
+    const r=await fetch('/admin/leads?password='+encodeURIComponent(pw));
+    console.log('Response received, status:', r.status);
+    if(r.status===401){
+      console.log('Unauthorized - wrong password');
+      document.getElementById('err').style.display='block';
+      return;
+    }
+    const d=await r.json();
+    console.log('Leads received:', d);
+    all=d.leads||[];
+    document.getElementById('lv').style.display='none';
+    document.getElementById('dv').style.display='block';
+    document.getElementById('err').style.display='none';
+    document.getElementById('ts').textContent='Updated: '+new Date().toLocaleTimeString();
+    stats();render();
+  } catch(e) {
+    console.error('Load error:', e);
+    document.getElementById('err').style.display='block';
+  }
 }
 function stats(){
   const t=all.length,c=all.filter(l=>l.type==='candidate').length,e=all.filter(l=>l.type==='employer').length;
