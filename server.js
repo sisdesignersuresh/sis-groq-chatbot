@@ -140,9 +140,13 @@ function normalizePassword(value) {
 }
 
 const ADMIN_PASS = normalizePassword(process.env.ADMIN_PASSWORD || 'sis2024admin');
+console.log('🔐 ADMIN_PASSWORD env:', JSON.stringify(process.env.ADMIN_PASSWORD));
+console.log('🔐 ADMIN_PASSWORD effective:', JSON.stringify(ADMIN_PASS));
 
 app.get('/admin/leads', (req, res) => {
   const providedPassword = normalizePassword(req.query.password);
+  console.log('🔐 admin login received password:', JSON.stringify(req.query.password));
+  console.log('🔐 admin login normalized password:', JSON.stringify(providedPassword));
   if (providedPassword !== ADMIN_PASS) return res.status(401).json({ error: 'Unauthorized' });
   const leads = readLeads();
   res.json({ total: leads.length, leads });
