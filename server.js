@@ -153,7 +153,7 @@ app.get('/admin/leads', (req, res) => {
 });
 
 app.get('/admin', (req, res) => {
-  res.send(`<!DOCTYPE html>
+  const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -228,71 +228,129 @@ tr:hover td{background:#0f172a}
   </div>
 </div>
 <script>
-let all=[],pw='';
-function go(){
-  pw=document.getElementById('pw').value;
-  console.log('Login button clicked, password:', pw);
+let allLeads = [];
+let adminPassword = '';
+
+function go() {
+  adminPassword = document.getElementById('pw').value;
+  console.log('Login button clicked');
   load();
 }
-async function load(){
+
+async function load() {
   try {
-    console.log('Fetching leads with password:', pw);
-    const r=await fetch('/admin/leads?password='+encodeURIComponent(pw));
-    console.log('Response received, status:', r.status);
-    if(r.status===401){
+    console.log('Fetching leads...');
+    const response = await fetch('/admin/leads?password=' + encodeURIComponent(adminPassword));
+    console.log('Response status:', response.status);
+    
+    if (response.status === 401) {
       console.log('Unauthorized - wrong password');
-      document.getElementById('err').style.display='block';
+      document.getElementById('err').style.display = 'block';
       return;
     }
-    const d=await r.json();
-    console.log('Leads received:', d);
-    all=d.leads||[];
-    document.getElementById('lv').style.display='none';
-    document.getElementById('dv').style.display='block';
-    document.getElementById('err').style.display='none';
-    document.getElementById('ts').textContent='Updated: '+new Date().toLocaleTimeString();
-    stats();render();
-  } catch(e) {
-    console.error('Load error:', e);
-    document.getElementById('err').style.display='block';
+    
+    const data = await response.json();
+    console.log('Leads received:', data);
+    
+    allLeads = data.leads || [];
+    document.getElementById('lv').style.display = 'none';
+    document.getElementById('dv').style.display = 'block';
+    document.getElementById('err').style.display = 'none';
+    document.getElementById('ts').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+    
+    stats();
+    render();
+  } catch (error) {
+    console.error('Load error:', error);
+    document.getElementById('err').style.display = 'block';
   }
 }
-function stats(){
-  const t=all.length,c=all.filter(l=>l.type==='candidate').length,e=all.filter(l=>l.type==='employer').length;
-  const td=all.filter(l=>new Date(l.timestamp).toDateString()===new Date().toDateString()).length;
-  document.getElementById('stats').innerHTML=
-    '<div class="stat"><div class="lbl">Total leads</div><div class="val">'+t+'</div></div>'+
-    '<div class="stat"><div class="lbl">Candidates</div><div class="val" style="color:#38bdf8">'+c+'</div></div>'+
-    '<div class="stat"><div class="lbl">Employers</div><div class="val" style="color:#4ade80">'+e+'</div></div>'+
-    '<div class="stat"><div class="lbl">Today</div><div class="val" style="color:#f59e0b">'+td+'</div></div>';
+
+function stats() {
+  const total = allLeads.length;
+  const candidates = allLeads.filter(l => l.type === 'candidate').length;
+  const employers = allLeads.filter(l => l.type === 'employer').length;
+  const today = allLeads.filter(l => new Date(l.timestamp).toDateString() === new Date().toDateString()).length;
+  
+  document.getElementById('stats').innerHTML = 
+    '<div class="stat"><div class="lbl">Total leads</div><div class="val">' + total + '</div></div>' +
+    '<div class="stat"><div class="lbl">Candidates</div><div class="val" style="color:#38bdf8">' + candidates + '</div></div>' +
+    '<div class="stat"><div class="lbl">Employers</div><div class="val" style="color:#4ade80">' + employers + '</div></div>' +
+    '<div class="stat"><div class="lbl">Today</div><div class="val" style="color:#f59e0b">' + today + '</div></div>';
 }
-function render(){
-  const ft=document.getElementById('ft').value,fs=document.getElementById('fs').value.toLowerCase();
-  const f=all.filter(l=>(!ft||l.type===ft)&&(!fs||(l.name||'').toLowerCase().includes(fs)||(l.job||'').toLowerCase().includes(fs)||(l.phone||'').includes(fs)));
-  const tb=document.getElementById('tb'),em=document.getElementById('em');
-  if(!f.length){tb.innerHTML='';em.style.display='block';return;}
-  em.style.display='none';
-  tb.innerHTML=f.map((l,i)=>{
-    const dt=new Date(l.timestamp);
-    const ds=dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})+'<br><span style="font-size:10px;color:#475569">'+dt.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})+'</span>';
-    const wn=l.type==='employer'?'385993665624':'919384747101';
-    const wm=encodeURIComponent('Hi '+l.name+', I am from SIS International. You enquired about '+l.job+' jobs in Europe. Are you still interested?');
-    return '<tr><td style="color:#475569">'+(i+1)+'</td><td style="font-weight:500">'+escape(l.name||'—')+'</td><td>'+escape(l.phone||'—')+'</td><td>'+escape(l.job||'—')+'</td><td><span class="badge '+(l.type==='employer'?'be':'bc')+'">'+((l.type||'candidate').toUpperCase())+'</span></td><td><span class="badge '+(l.source==='chatbot'?'bs':'bm')+'">'+escape(l.source||'chatbot')+'</span></td><td>'+ds+'</td><td><a class="wa" href="https://wa.me/'+wn+'?text='+wm+'" target="_blank">💬 WhatsApp</a></td></tr>';
+
+function render() {
+  const filterType = document.getElementById('ft').value;
+  const searchTerm = document.getElementById('fs').value.toLowerCase();
+  
+  const filtered = allLeads.filter(l => {
+    const typeMatch = !filterType || l.type === filterType;
+    const searchMatch = !searchTerm || 
+      (l.name || '').toLowerCase().includes(searchTerm) || 
+      (l.job || '').toLowerCase().includes(searchTerm) || 
+      (l.phone || '').includes(searchTerm);
+    return typeMatch && searchMatch;
+  });
+  
+  const tbody = document.getElementById('tb');
+  const empty = document.getElementById('em');
+  
+  if (!filtered.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  
+  empty.style.display = 'none';
+  tbody.innerHTML = filtered.map((lead, idx) => {
+    const dt = new Date(lead.timestamp);
+    const dateStr = dt.toLocaleDateString('en-IN', {day: '2-digit', month: 'short'}) + 
+                    '<br><span style="font-size:10px;color:#475569">' + 
+                    dt.toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit'}) + '</span>';
+    const whatsappNum = lead.type === 'employer' ? '385993665624' : '919384747101';
+    const whatsappMsg = encodeURIComponent('Hi ' + lead.name + ', I am from SIS International. You enquired about ' + lead.job + ' jobs in Europe. Are you still interested?');
+    
+    return '<tr>' +
+      '<td style="color:#475569">' + (idx + 1) + '</td>' +
+      '<td style="font-weight:500">' + escapeHtml(lead.name || '—') + '</td>' +
+      '<td>' + escapeHtml(lead.phone || '—') + '</td>' +
+      '<td>' + escapeHtml(lead.job || '—') + '</td>' +
+      '<td><span class="badge ' + (lead.type === 'employer' ? 'be' : 'bc') + '">' + (lead.type || 'candidate').toUpperCase() + '</span></td>' +
+      '<td><span class="badge ' + (lead.source === 'chatbot' ? 'bs' : 'bm') + '">' + escapeHtml(lead.source || 'chatbot') + '</span></td>' +
+      '<td>' + dateStr + '</td>' +
+      '<td><a class="wa" href="https://wa.me/' + whatsappNum + '?text=' + whatsappMsg + '" target="_blank">💬 WhatsApp</a></td>' +
+      '</tr>';
   }).join('');
 }
-function escape(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
-function csv(){
-  const h=['Name','Phone','Job','Type','Source','Timestamp'];
-  const rows=all.map(l=>[l.name,l.phone,l.job,l.type,l.source,l.timestamp]);
-  const c=[h,...rows].map(r=>r.map(v=>['"', String(v ?? '').replace(/"/g,'""'), '"'].join('')).join(',')).join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:'text/csv'}));
-  a.download='sis-leads-'+Date.now()+'.csv';a.click();
+
+function escapeHtml(text) {
+  return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 }
-setInterval(()=>{if(pw)load();},60000);
+
+function csv() {
+  const headers = ['Name', 'Phone', 'Job', 'Type', 'Source', 'Timestamp'];
+  const rows = allLeads.map(l => [l.name, l.phone, l.job, l.type, l.source, l.timestamp]);
+  const csvContent = [headers, ...rows].map(row => 
+    row.map(cell => '"' + String(cell || '').replace(/"/g, '""') + '"').join(',')
+  ).join('\\n');
+  
+  const blob = new Blob([csvContent], {type: 'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'sis-leads-' + Date.now() + '.csv';
+  a.click();
+}
+
+setInterval(() => {
+  if (adminPassword) load();
+}, 60000);
 </script>
 </body>
-</html>`);
+</html>`;
+  res.send(html);
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
