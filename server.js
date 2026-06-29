@@ -30,8 +30,6 @@ app.use(cors({
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
 const LEADS_FILE = path.join(__dirname, 'leads.json');
 if (!fs.existsSync(LEADS_FILE)) fs.writeFileSync(LEADS_FILE, '[]');
 
@@ -54,6 +52,20 @@ function saveLead(lead) {
   }
   return false;
 }
+
+function normalizeEnv(value) {
+  return String(value || '')
+    .trim()
+    .replace(/^['"]|['"]$/g, '');
+}
+
+const GROQ_API_KEY = normalizeEnv(process.env.GROQ_API_KEY);
+const groqKeyIsValid = typeof GROQ_API_KEY === 'string' && GROQ_API_KEY.length > 0 && GROQ_API_KEY !== 'your_existing_key_here';
+if (!groqKeyIsValid) {
+  console.error('ERROR: GROQ_API_KEY is missing or still a placeholder. Set GROQ_API_KEY in environment.');
+}
+const groq = groqKeyIsValid ? new Groq({ apiKey: GROQ_API_KEY }) : null;
+console.log('🔑 GROQ_API_KEY configured:', groqKeyIsValid);
 
 const SYSTEM_PROMPT = `You are an AI Recruitment Assistant for SIS International Recruiters — a company that places Indian and Nepali workers in Europe (Croatia, Serbia, Bulgaria, North Macedonia, Albania, Montenegro).
 
@@ -98,6 +110,10 @@ app.post('/chat', async (req, res) => {
   }
 
   try {
+    if (!groq) {
+      return res.status(503).json({ error: 'AI service is not configured. Please set a valid GROQ_API_KEY.' });
+    }
+
     const completion = await groq.chat.completions.create({
       model: 'llama3-8b-8192',
       messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
@@ -105,7 +121,7 @@ app.post('/chat', async (req, res) => {
       temperature: 0.7,
     });
 
-    let reply = completion.choices[0]?.message?.content || 'Sorry, please try again.';
+    let reply = completion.choices?.[0]?.message?.content || 'Sorry, please try again.';
 
     const leadMatch = reply.match(/\[LEAD_DATA\](.*?)\[\/LEAD_DATA\]/s);
     let leadCaptured = false;
@@ -126,7 +142,7 @@ app.post('/chat', async (req, res) => {
     res.json({ reply, leadCaptured });
   } catch (error) {
     console.error('Groq error:', error.message);
-    res.status(500).json({ error: 'AI error. Please try again.' });
+    res.status(500).json({ error: 'AI service is temporarily unavailable. Please try again later.' });
   }
 });
 
