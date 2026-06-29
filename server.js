@@ -255,7 +255,7 @@ function escape(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
 function csv(){
   const h=['Name','Phone','Job','Type','Source','Timestamp'];
   const rows=all.map(l=>[l.name,l.phone,l.job,l.type,l.source,l.timestamp]);
-  const c=[h,...rows].map(r=>r.map(v=>\`"${String(v ?? '').replace(/"/g,'""')}"\`).join(',')).join('\n');
+  const c=[h,...rows].map(r=>r.map(v=>['"', String(v ?? '').replace(/"/g,'""'), '"'].join('')).join(',')).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:'text/csv'}));
   a.download='sis-leads-'+Date.now()+'.csv';a.click();
 }
