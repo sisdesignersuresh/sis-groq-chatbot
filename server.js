@@ -92,10 +92,21 @@ When any user shows interest in jobs or hiring, naturally ask for their:
 1. Full name
 2. Phone number with country code
 3. Job role they want (or workers they need)
-4. Are they a candidate or employer
 
-Once you have all 4 details, at the very END of your response add EXACTLY this block:
-[LEAD_DATA]{"name":"FULLNAME","phone":"PHONENUMBER","job":"JOBROLE","type":"candidate or employer"}[/LEAD_DATA]
+CRITICAL: Once you have collected name, phone, and job role:
+- IMMEDIATELY reply: "Thank you [name]! Our team will contact you at [phone] within 24 hours. WhatsApp: +91 93847 47101"
+- Then add the lead data block
+- STOP ASKING MORE QUESTIONS - conversation is complete
+
+SPECIAL RESPONSES:
+- If user says "thank you" or similar: Reply with "You're welcome! Best of luck with your Europe job. Feel free to contact us anytime."
+- Never ask the same question twice
+- Keep responses short (2-3 lines max)
+- Stay relevant to recruitment only
+
+LEAD DATA FORMAT:
+Once you have name, phone, and job, add EXACTLY this block at the very END:
+[LEAD_DATA]{"name":"FULLNAME","phone":"PHONENUMBER","job":"JOBROLE","type":"candidate"}[/LEAD_DATA]
 
 Rules:
 - Keep responses under 5 lines
@@ -184,6 +195,16 @@ app.get('/admin/leads', (req, res) => {
   if (providedPassword !== ADMIN_PASS) return res.status(401).json({ error: 'Unauthorized' });
   const leads = readLeads();
   res.json({ total: leads.length, leads });
+});
+
+// DELETE LEAD
+app.delete('/admin/lead', (req, res) => {
+  const { password, phone } = req.body;
+  if (password !== ADMIN_PASS) return res.status(401).json({ error: 'Unauthorized' });
+  const leads = readLeads();
+  const filtered = leads.filter(l => l.phone !== phone);
+  fs.writeFileSync(LEADS_FILE, JSON.stringify(filtered, null, 2));
+  res.json({ success: true, deleted: leads.length - filtered.length });
 });
 
 app.get('/admin', (req, res) => {
@@ -392,3 +413,5 @@ app.listen(PORT, () => {
   console.log('📊 Admin:', 'http://localhost:' + PORT + '/admin');
   console.log('🔑 Password:', ADMIN_PASS);
 });
+
+
