@@ -240,7 +240,7 @@ button:hover{background:#0284c7}
 .ebtn{width:auto;padding:7px 14px;font-size:12px;background:#0ea5e9;border:none;color:#fff;border-radius:7px;font-weight:600}
 table{width:100%;border-collapse:collapse;table-layout:fixed}.tbl-scroll{overflow-x:auto}
 th{padding:10px 14px;text-align:left;font-size:10px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #334155}
-td{padding:11px 14px;font-size:12px;border-bottom:1px solid #1e293b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+td{padding:11px 14px;font-size:12px;border-bottom:1px solid #1e293b;white-space:nowrap}td.act{overflow:visible}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#0f172a}
 .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
@@ -276,7 +276,7 @@ tr:hover td{background:#0f172a}
         <button class="ebtn" onclick="csv()">⬇ Export CSV</button>
       </div>
       <div class="tbl-scroll"><table>
-        <thead><tr><th style="width:36px">#</th><th style="width:140px">Name</th><th style="width:130px">Phone</th><th>Job / Role</th><th style="width:90px">Type</th><th style="width:80px">Source</th><th style="width:110px">Date</th><th style="width:140px">Action</th></tr></thead>
+        <thead><tr><th style="width:36px">#</th><th style="width:140px">Name</th><th style="width:130px">Phone</th><th>Job / Role</th><th style="width:90px">Type</th><th style="width:80px">Source</th><th style="width:110px">Date</th><th style="width:170px">Action</th></tr></thead>
         <tbody id="tb"></tbody>
       </table></div>
       <div class="empty" id="em" style="display:none">No leads found</div>
