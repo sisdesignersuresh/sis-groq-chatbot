@@ -385,7 +385,7 @@ function render() {
       '<td><span class="badge ' + (lead.type === 'employer' ? 'be' : 'bc') + '">' + (lead.type || 'candidate').toUpperCase() + '</span></td>' +
       '<td><span class="badge ' + (lead.source === 'chatbot' ? 'bs' : 'bm') + '">' + escapeHtml(lead.source || 'chatbot') + '</span></td>' +
       '<td>' + dateStr + '</td>' +
-      '<td><a class="wa" href="https://wa.me/' + whatsappNum + '?text=' + whatsappMsg + '" target="_blank">💬 WhatsApp</a> <button class="del" onclick="deleteLead(\'' + lead.phone + '\')">🗑️</button></td>' +
+      '<td><a class="wa" href="https://wa.me/' + whatsappNum + '?text=' + whatsappMsg + '" target="_blank">💬 WhatsApp</a> <button class="del" onclick="deleteLead(&quot;' + lead.phone + '&quot;)">🗑️</button></td>' +
       '</tr>';
   }).join('');
 }
