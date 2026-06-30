@@ -248,7 +248,7 @@ tr:hover td{background:#0f172a}
 .bs{background:#1e1b4b;color:#818cf8}
 .bm{background:#1c1917;color:#a8a29e}
 .wa{display:inline-block;padding:3px 9px;background:#166534;color:#4ade80;border-radius:5px;font-size:11px;text-decoration:none}
-.wa:hover{background:#15803d}
+.wa:hover{background:#15803d}.del{background:none;border:none;cursor:pointer;font-size:13px;margin-left:6px;padding:3px 6px;border-radius:5px}.del:hover{background:#7f1d1d}
 .empty{text-align:center;padding:50px;color:#475569}
 </style>
 </head>
@@ -334,6 +334,18 @@ function stats() {
     '<div class="stat"><div class="lbl">Today</div><div class="val" style="color:#f59e0b">' + today + '</div></div>';
 }
 
+async function deleteLead(phone) {
+  if (!confirm('Delete this lead?')) return;
+  try {
+    const r = await fetch('/admin/lead', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw, phone: phone })
+    });
+    if (r.ok) { load(); } else { alert('Delete failed'); }
+  } catch (e) { alert('Error deleting lead'); }
+}
+
 function render() {
   const filterType = document.getElementById('ft').value;
   const searchTerm = document.getElementById('fs').value.toLowerCase();
@@ -373,7 +385,7 @@ function render() {
       '<td><span class="badge ' + (lead.type === 'employer' ? 'be' : 'bc') + '">' + (lead.type || 'candidate').toUpperCase() + '</span></td>' +
       '<td><span class="badge ' + (lead.source === 'chatbot' ? 'bs' : 'bm') + '">' + escapeHtml(lead.source || 'chatbot') + '</span></td>' +
       '<td>' + dateStr + '</td>' +
-      '<td><a class="wa" href="https://wa.me/' + whatsappNum + '?text=' + whatsappMsg + '" target="_blank">💬 WhatsApp</a></td>' +
+      '<td><a class="wa" href="https://wa.me/' + whatsappNum + '?text=' + whatsappMsg + '" target="_blank">💬 WhatsApp</a> <button class="del" onclick="deleteLead(\'' + lead.phone + '\')">🗑️</button></td>' +
       '</tr>';
   }).join('');
 }
@@ -413,5 +425,6 @@ app.listen(PORT, () => {
   console.log('📊 Admin:', 'http://localhost:' + PORT + '/admin');
   console.log('🔑 Password:', ADMIN_PASS);
 });
+
 
 
