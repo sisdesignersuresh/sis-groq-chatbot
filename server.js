@@ -238,7 +238,7 @@ button:hover{background:#0284c7}
 .tbl-hdr select,.tbl-hdr input{width:auto;margin:0;padding:6px 10px;font-size:12px}
 .rbtn{width:auto;padding:7px 14px;font-size:12px;background:#1e293b;border:1px solid #334155;color:#94a3b8;border-radius:7px}
 .ebtn{width:auto;padding:7px 14px;font-size:12px;background:#0ea5e9;border:none;color:#fff;border-radius:7px;font-weight:600}
-table{width:100%;border-collapse:collapse;table-layout:fixed}
+table{width:100%;border-collapse:collapse;table-layout:fixed}.tbl-scroll{overflow-x:auto}
 th{padding:10px 14px;text-align:left;font-size:10px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #334155}
 td{padding:11px 14px;font-size:12px;border-bottom:1px solid #1e293b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 tr:last-child td{border-bottom:none}
@@ -248,7 +248,7 @@ tr:hover td{background:#0f172a}
 .be{background:#14532d;color:#4ade80}
 .bs{background:#1e1b4b;color:#818cf8}
 .bm{background:#1c1917;color:#a8a29e}
-.wa{display:inline-block;padding:3px 9px;background:#166534;color:#4ade80;border-radius:5px;font-size:11px;text-decoration:none}
+.wa{display:inline-block;padding:3px 8px;background:#166534;color:#4ade80;border-radius:5px;font-size:10px;text-decoration:none;white-space:nowrap}
 .wa:hover{background:#15803d}.del{background:none;border:none;cursor:pointer;font-size:13px;margin-left:6px;padding:3px 6px;border-radius:5px}.del:hover{background:#7f1d1d}
 .empty{text-align:center;padding:50px;color:#475569}
 </style>
@@ -275,10 +275,10 @@ tr:hover td{background:#0f172a}
         <button class="rbtn" onclick="load()">↺ Refresh</button>
         <button class="ebtn" onclick="csv()">⬇ Export CSV</button>
       </div>
-      <table>
-        <thead><tr><th style="width:36px">#</th><th style="width:140px">Name</th><th style="width:130px">Phone</th><th>Job / Role</th><th style="width:90px">Type</th><th style="width:80px">Source</th><th style="width:110px">Date</th><th style="width:90px">Action</th></tr></thead>
+      <div class="tbl-scroll"><table>
+        <thead><tr><th style="width:36px">#</th><th style="width:140px">Name</th><th style="width:130px">Phone</th><th>Job / Role</th><th style="width:90px">Type</th><th style="width:80px">Source</th><th style="width:110px">Date</th><th style="width:140px">Action</th></tr></thead>
         <tbody id="tb"></tbody>
-      </table>
+      </table></div>
       <div class="empty" id="em" style="display:none">No leads found</div>
     </div>
   </div>
