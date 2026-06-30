@@ -276,7 +276,7 @@ tr:hover td{background:#0f172a}
         <button class="ebtn" onclick="csv()">⬇ Export CSV</button>
       </div>
       <div class="tbl-scroll"><table>
-        <thead><tr><th style="width:36px">#</th><th style="width:140px">Name</th><th style="width:130px">Phone</th><th style="width:130px">Job / Role</th><th style="width:90px">Type</th><th style="width:80px">Source</th><th style="width:110px">Date</th><th style="width:170px">Action</th></tr></thead>
+        <thead><tr><th style="width:36px">#</th><th style="width:100px">Name</th><th style="width:110px">Phone</th><th style="width:130px">Job / Role</th><th style="width:90px">Type</th><th style="width:80px">Source</th><th style="width:110px">Date</th><th style="width:170px">Action</th></tr></thead>
         <tbody id="tb"></tbody>
       </table></div>
       <div class="empty" id="em" style="display:none">No leads found</div>
