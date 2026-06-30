@@ -30,7 +30,8 @@ app.use(cors({
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const LEADS_FILE = path.join(__dirname, 'leads.json');
+const DATA_DIR = process.env.RAILWAY_VOLUME_MOUNT_PATH || __dirname;
+const LEADS_FILE = path.join(DATA_DIR, 'leads.json');
 if (!fs.existsSync(LEADS_FILE)) fs.writeFileSync(LEADS_FILE, '[]');
 
 function readLeads() {
