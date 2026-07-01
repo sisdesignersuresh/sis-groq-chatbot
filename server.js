@@ -198,14 +198,24 @@ app.get('/admin/leads', (req, res) => {
   res.json({ total: leads.length, leads });
 });
 
-// DELETE LEAD
-app.delete('/admin/lead', (req, res) => {
+// DELETE LEAD — uses POST to avoid Railway proxy stripping DELETE request body
+app.post('/admin/lead/delete', (req, res) => {
   const { password, phone } = req.body;
-  if (normalizePassword(password) !== ADMIN_PASS) return res.status(401).json({ error: 'Unauthorized' });
-  const leads = readLeads();
-  const filtered = leads.filter(l => l.phone !== phone);
-  fs.writeFileSync(LEADS_FILE, JSON.stringify(filtered, null, 2));
-  res.json({ success: true, deleted: leads.length - filtered.length });
+  console.log('🗑️  delete request received, phone:', phone, 'password length:', String(password || '').length);
+  if (normalizePassword(password) !== ADMIN_PASS) {
+    console.log('🗑️  delete rejected: password mismatch');
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  try {
+    const leads = readLeads();
+    const filtered = leads.filter(l => l.phone !== phone);
+    fs.writeFileSync(LEADS_FILE, JSON.stringify(filtered, null, 2));
+    console.log('🗑️  deleted', leads.length - filtered.length, 'lead(s) with phone:', phone);
+    res.json({ success: true, deleted: leads.length - filtered.length });
+  } catch (err) {
+    console.error('🗑️  delete file write error:', err.message);
+    res.status(500).json({ error: 'Failed to delete lead' });
+  }
 });
 
 app.get('/admin', (req, res) => {
@@ -338,8 +348,8 @@ function stats() {
 async function deleteLead(phone) {
   if (!confirm('Delete this lead?')) return;
   try {
-    const r = await fetch('/admin/lead', {
-      method: 'DELETE',
+    const r = await fetch('/admin/lead/delete', {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password: adminPassword, phone: phone })
     });
