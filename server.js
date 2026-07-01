@@ -97,7 +97,7 @@ When any user shows interest in jobs or hiring, naturally ask for their:
 CRITICAL: Once you have collected name, phone, and job role:
 - IMMEDIATELY reply: "Thank you [name]! Our team will contact you at [phone] within 24 hours. WhatsApp: +91 93847 47101"
 - Then add the lead data block
-- STOP ASKING MORE QUESTIONS - conversation is complete
+- STOP ASKING MORE QUESTIONS - conversation is COMPLETE. Do not ask follow-up questions about experience, documents, or anything else.
 
 SPECIAL RESPONSES:
 - If user says "thank you" or similar: Reply with "You're welcome! Best of luck with your Europe job. Feel free to contact us anytime."
@@ -107,7 +107,7 @@ SPECIAL RESPONSES:
 
 LEAD DATA FORMAT:
 Once you have name, phone, and job, add EXACTLY this block at the very END:
-[LEAD_DATA]{"name":"FULLNAME","phone":"PHONENUMBER","job":"JOBROLE","type":"candidate"}[/LEAD_DATA]
+[LEAD_DATA]{"name":"FULLNAME","phone":"PHONENUMBER","job":"JOBROLE","type":"candidate or employer"}[/LEAD_DATA]
 
 Rules:
 - Keep responses under 5 lines
@@ -341,7 +341,7 @@ async function deleteLead(phone) {
     const r = await fetch('/admin/lead', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pw, phone: phone })
+      body: JSON.stringify({ password: adminPassword, phone: phone })
     });
     if (r.ok) { load(); } else { alert('Delete failed'); }
   } catch (e) { alert('Error deleting lead'); }
