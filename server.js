@@ -24,7 +24,7 @@ app.use(cors({
       callback(new Error('CORS policy: Origin not allowed'));
     }
   },
-  methods: ['GET', 'POST', 'OPTIONS'],
+  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(express.json());
@@ -201,7 +201,7 @@ app.get('/admin/leads', (req, res) => {
 // DELETE LEAD
 app.delete('/admin/lead', (req, res) => {
   const { password, phone } = req.body;
-  if (password !== ADMIN_PASS) return res.status(401).json({ error: 'Unauthorized' });
+  if (normalizePassword(password) !== ADMIN_PASS) return res.status(401).json({ error: 'Unauthorized' });
   const leads = readLeads();
   const filtered = leads.filter(l => l.phone !== phone);
   fs.writeFileSync(LEADS_FILE, JSON.stringify(filtered, null, 2));
