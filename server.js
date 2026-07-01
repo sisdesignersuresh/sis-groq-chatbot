@@ -201,7 +201,7 @@ app.get('/admin/leads', (req, res) => {
 // DELETE LEAD — uses POST to avoid Railway proxy stripping DELETE request body
 app.post('/admin/lead/delete', (req, res) => {
   const { password, phone } = req.body;
-  console.log('🗑️  delete request received, phone:', phone, 'password length:', String(password || '').length);
+  console.log('🗑️  delete: phone=', phone, '| pw_len=', String(password || '').length, '| match=', normalizePassword(password) === ADMIN_PASS);
   if (normalizePassword(password) !== ADMIN_PASS) {
     console.log('🗑️  delete rejected: password mismatch');
     return res.status(401).json({ error: 'Unauthorized' });
@@ -348,13 +348,24 @@ function stats() {
 async function deleteLead(phone) {
   if (!confirm('Delete this lead?')) return;
   try {
+    console.log('[delete] sending phone:', phone, '| adminPassword length:', adminPassword.length, '| adminPassword set:', !!adminPassword);
     const r = await fetch('/admin/lead/delete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password: adminPassword, phone: phone })
     });
-    if (r.ok) { load(); } else { alert('Delete failed'); }
-  } catch (e) { alert('Error deleting lead'); }
+    console.log('[delete] response status:', r.status);
+    if (r.ok) {
+      load();
+    } else {
+      const errText = await r.text();
+      console.error('[delete] failed:', r.status, errText);
+      alert('Delete failed (HTTP ' + r.status + '): ' + errText);
+    }
+  } catch (e) {
+    console.error('[delete] network error:', e);
+    alert('Network error deleting lead: ' + e.message);
+  }
 }
 
 function render() {
